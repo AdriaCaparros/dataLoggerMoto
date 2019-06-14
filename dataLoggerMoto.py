@@ -12,9 +12,9 @@ TEMP4=0x370
 SOC_BATTERY=0xA0
 RPM=0xA1
 
+os.remove("/media/pi/AFEC-4877/log.txt")
+outfile=open('/media/pi/AFEC-4877/log.txt','w')
 
-outfile=open('log.txt','w')
-os.remove("log.txt")
 
 print('\n\rCAN Rx test')
 print('Bring up CAN0...')
@@ -25,6 +25,10 @@ os.system("sudo /sbin/ip link set can0 up type can bitrate 500000")
 time.sleep(0.1)
 print('Ready')
 bus = can.interface.Bus(channel='can0',bustype='socketcan_native')
+
+tpdo_1 = can.Message(data=[0, 0, 0, 0, 0, 0, 0, 0], arbitration_id=0x274)
+tpdo_2 = can.Message(data=[0, 0, 0, 0, 0, 0, 0, 0], arbitration_id=0x195)
+tpdo_3 = can.Message(data=[0, 0, 0, 0, 0, 0, 0, 0], arbitration_id=0x146)
 
 speed=0
 voltage=0
@@ -42,23 +46,23 @@ while True:
                 s|=message.data[i]<<(8*i)
                 
             c='{0:f},{1:d},'.format(message.timestamp,count)
-            if (message.arbitration_id == VEHICLE_SPEED):
+            if (message.arbitration_id == 0x274):
                 print("Data: ",s)
                 print("Id: ", message.arbitration_id)
-                speed=s
+                tpdo_1.data = message.data
                 
-            if (message.arbitration_id == VOLTAGE_BATTERY):
+            if (message.arbitration_id == 0x195):
                 print("Data: ",s)
                 print("Id: ", message.arbitration_id)
-                volatge=s
+                tpdo_2.data = message.data
                 
-            if (message.arbitration_id == TEMP1):
+            if (message.arbitration_id == 0x146):
                 print("Data: ",s)
                 print("Id: ", message.arbitration_id)
-                temp1=s
+                tpdo_3.data = message.data
         
     
-    c+='{0:d},{1:d},{2:d}'.format(speed,voltage,temp1)
+    c+='{0:d},{1:d},{2:d}'.format(0,0,0)
     print('\r {} '.fromat(c))
     print(c,file=outfile)
     count+=1
