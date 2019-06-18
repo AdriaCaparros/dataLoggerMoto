@@ -5,8 +5,8 @@ import math
 import RPi.GPIO as GPIO
 
 
-os.remove("/media/pi/AFEC-4877/log.txt")
-outfile=open('/media/pi/AFEC-4877/log.txt','w')
+os.remove("/media/pi/AFEC-4877/log.csv")
+outfile=open('/media/pi/AFEC-4877/log.csv','w')
 
 
 print('\n\rCAN Rx test')
